@@ -19,12 +19,29 @@ namespace Main
         public MainCharacter() 
         {
             HitPoints = 1000;
-            Damage = 66;
-            Armor = 13;
+            Damage = AttackDamage();
+            ArmorClass = 10;
         }
 
         public int HitPoints { get; set; }
         public int Damage { get; set; }
-        public int Armor { get; set; }
+        public int ArmorClass { get; set; }
+        public int MeleeWeaponBonus { get; set; }
+        public int RangeWeaponBonus { get; set; }
+
+
+        public int RollAttackVSArmorClass()
+        {
+            Random dice20 = new Random();
+            int rollDice = dice20.Next(20);            
+            return rollDice;
+        }
+
+        public int AttackDamage()
+        {
+            Random dice10 = new Random();
+            int attackDice = dice10.Next(10);
+            return attackDice;
+        }
     }
 }

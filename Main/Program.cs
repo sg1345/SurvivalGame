@@ -25,44 +25,33 @@ internal class Program
             PrintAction();
 
             while (enemy.HitPoints > 0 && character.HitPoints > 0)
-            {                
+            {
                 SetDefaultCursorPosition();
 
-                string command = Console.ReadLine();
+                ConsoleKeyInfo command = Console.ReadKey(intercept: true);
 
                 bool isNotRealCommand = false;
-                switch (command)
+                switch (command.Key)
                 {
-                    case "A": //knife attack
-                        int hitDamage;
-                        enemy.HitPoints -= character.Damage;
-                        character.HitPoints -= enemy.Damage;
+                    case ConsoleKey.A:
+                        MeleeWeaponAttack(character, inventory, enemy);
                         break;
 
-                    case "Q": //pistol shot
-                        hitDamage = character.Damage * 2;
-                        enemy.HitPoints -= hitDamage;
+                    case ConsoleKey.Q:
+                        RangeWeaponAttack(character, inventory, enemy);
                         break;
 
-                    //case "C": //bow shot
-                    //    hitDamage = character.Damage;
-                    //    enemy.HitPoints -= hitDamage;
-                    //    break;
 
-                    case "R": //holly water
-                        enemy.HitPoints = 0;
+                    case ConsoleKey.R:
+                        UseHollyWater(inventory, enemy);
                         break;
 
-                    case "E": //bandage
-                        character.HitPoints += 250;
-                        if (character.HitPoints >= 1000)
-                        {
-                            character.HitPoints = 1000;
-                        }
+                    case ConsoleKey.E:
+                        UseBandages(character, inventory);
                         break;
 
-                    case "W": //first aid spray
-                        character.HitPoints = 1000;
+                    case ConsoleKey.W:
+                        UseFirstAidSpray(character, inventory);
                         break;
 
                     default:
@@ -75,7 +64,7 @@ internal class Program
                     continue;
                 }
 
-                if(enemy.HitPoints <= 0)
+                if (enemy.HitPoints <= 0)
                 {
                     counters.Total++;
                 }
@@ -87,18 +76,80 @@ internal class Program
                     character.HitPoints = 0;
                 }
                 PrintCharacter(character);
+                PrintInventory(inventory);
             }
 
             if (character.HitPoints <= 0)
-            {                
+            {
                 Console.WriteLine("YOU DIED! PLAY AGAIN?");
                 return;
             }
         }
     }
 
+    //Action Methods
+    static void UseFirstAidSpray(MainCharacter character, Inventory inventory)
+    {
+        if (inventory.FirstAidSpray > 0)
+        {
+            character.HitPoints = 1000;
+            inventory.FirstAidSpray -= 1;
+        }
+    }
+    static void UseBandages(MainCharacter character, Inventory inventory)
+    {
+        if (inventory.Bandages > 0)
+        {
+            character.HitPoints += 250;
+            if (character.HitPoints >= 1000)
+            {
+                character.HitPoints = 1000;
+            }
+            inventory.Bandages -= 1;
+        }
+    }
+    static void UseHollyWater(Inventory inventory, Enemies enemy)
+    {
+        if (inventory.HollyWaterBottles > 0)
+        {
+            enemy.HitPoints = 0;
+            inventory.HollyWaterBottles -= 1;
+        }
+    }
+    static void RangeWeaponAttack(MainCharacter character, Inventory inventory, Enemies enemy)
+    {
+        if (inventory.Bullets > 0)
+        {
+            inventory.Bullets -= 1;
+        }
+        else
+        {
+            return;
+        }
 
+        if ((character.RollAttackVSArmorClass() + inventory.RangeAttackBonus()) > enemy.ArmorClass)
+        {
+            enemy.HitPoints -= character.AttackDamage() + inventory.RangeDamageBonus();
+        }
 
+        if (enemy.RollAttackVSArmorClass() > character.ArmorClass)
+        {
+            character.HitPoints -= enemy.Damage;
+        }
+    }
+    static void MeleeWeaponAttack(MainCharacter character, Inventory inventory, Enemies enemy)
+    {
+        if ((character.RollAttackVSArmorClass() + inventory.MeleeAttackBonus()) > enemy.ArmorClass)
+        {
+            enemy.HitPoints -= character.AttackDamage() + inventory.MeleeDamageBonus();
+        }
+        if ((enemy.RollAttackVSArmorClass()) > character.ArmorClass)
+        {
+            character.HitPoints -= enemy.Damage;
+        }
+    }
+
+    //Printing Methods
     static void PrintEnemy(Enemies enemy)
     {
         Console.SetCursorPosition(0, 0);
@@ -106,11 +157,12 @@ internal class Program
         LineCleaner(0, 0, 100);
         Console.WriteLine($"You are fighting: {enemy.EnemyType}");
 
-        LineCleaner(0,1,100);// 100 е за да не изстрие целия ред
-        Console.WriteLine($"HP: {enemy.HitPoints}");
+        LineCleaner(0, 1, 100);// 100 е за да не изстрие целия ред
+        Console.Write($"HP: {enemy.HitPoints}".PadRight(40));
+        Console.Write($"DMG {enemy.Damage}".PadRight(40));
+        Console.Write($"ARMOR {enemy.ArmorClass}");
 
-        LineCleaner(0, 2, 100);
-        Console.Write($"DMG {enemy.Damage}");
+        // LineCleaner(0, 2, 100);// резервна линия
     }
     static void PrintKillCounter(Counters counters)
     {
@@ -129,21 +181,23 @@ internal class Program
     {
         Console.SetCursorPosition(0, 4);
         Console.WriteLine($"Characters Stats:");
-        LineCleaner(0,5, 100);
+        LineCleaner(0, 5, 100);
         Console.Write($"HP: {character.HitPoints}\\1000".PadRight(40));
         Console.Write($"DMG: {character.Damage}".PadRight(40));
-        Console.WriteLine($"ARMOR: {character.Armor}");
+        Console.WriteLine($"ARMOR: {character.ArmorClass}");
         Console.WriteLine();
     }
     static void PrintInventory(Inventory inventory)
     {
         Console.SetCursorPosition(0, 7);
         Console.WriteLine($"Inventory:");
-        Console.Write($"Knife: {inventory.Knife}".PadRight(40));
-        Console.Write($"Bullets: {inventory.Bullets}".PadRight(40));
-        Console.WriteLine($"Arrows: {inventory.Arrows}");
+        LineCleaner(0, 8, Console.WindowWidth);
+        Console.Write($"Melee Weapon: {inventory.MeleeWeapon}".PadRight(40));
         Console.Write($"Holly Water Bottles: {inventory.HollyWaterBottles}".PadRight(40));
-        Console.Write($"Bandages: {inventory.Bandages}".PadRight(40));
+        Console.WriteLine($"Bandages: {inventory.Bandages}");
+        LineCleaner(0, 9, Console.WindowWidth);
+        Console.Write($"Range Weapon: {inventory.RangeWeapon}".PadRight(40));
+        Console.Write($"Bullets: {inventory.Bullets}".PadRight(40));
         Console.Write($"First Aid Spray: {inventory.FirstAidSpray}");
         Console.WriteLine();
         Console.WriteLine();

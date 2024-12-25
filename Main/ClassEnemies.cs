@@ -31,16 +31,49 @@ namespace Main
         public string EnemyType { get; set; }
         public int HitPoints { get; set; }
         public int Damage { get; set; }
+        public int ArmorClass { get; set; }
 
+        //action
+        public int RollAttackVSArmorClass()
+        {
+            Random dice20 = new Random();
+            int rollDice = dice20.Next(20);
+            return rollDice;
+        }
 
-
+        //inputMethod
         private void EnemyInput(string enemyType)
         {
             EnemyType = AdjectiveGenerator(enemyType);
             HitPoints = HitPointsGenerator(enemyType);
             Damage = DamageGenerator(enemyType);
+            ArmorClass= ArmorClassGenerator(enemyType);
         }
 
+        //random generator
+        private int ArmorClassGenerator(string enemyType)
+        {
+            int AC = 0;
+            switch (enemyType)
+            {
+                case "Soulless":
+                    AC = 10;
+                    break;
+
+                case "Hunter":
+                    AC = 13;
+                    break;
+
+                case "Hidden":
+                    AC = 10;
+                    break;
+
+                case "Demon":
+                    AC = 15;
+                    break;
+            }
+            return AC;
+        }
         private string AdjectiveGenerator(string enemyType)
         {
             List<string> adjectives = new();
