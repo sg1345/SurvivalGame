@@ -34,24 +34,24 @@ internal class Program
                 switch (command.Key)
                 {
                     case ConsoleKey.A:
-                        MeleeWeaponAttack(character, inventory, enemy);
+                        GameMechanics.MeleeWeaponAttack(character, inventory, enemy);
                         break;
 
                     case ConsoleKey.Q:
-                        RangeWeaponAttack(character, inventory, enemy);
+                        GameMechanics.RangeWeaponAttack(character, inventory, enemy);
                         break;
 
 
                     case ConsoleKey.R:
-                        UseHollyWater(inventory, enemy);
+                        GameMechanics.UseHollyWater(inventory, enemy);
                         break;
 
                     case ConsoleKey.E:
-                        UseBandages(character, inventory);
+                        GameMechanics.UseBandages(character, inventory);
                         break;
 
                     case ConsoleKey.W:
-                        UseFirstAidSpray(character, inventory);
+                        GameMechanics.UseFirstAidSpray(character, inventory);
                         break;
 
                     default:
@@ -84,68 +84,6 @@ internal class Program
                 Console.WriteLine("YOU DIED! PLAY AGAIN?");
                 return;
             }
-        }
-    }
-
-    //Action Methods
-    static void UseFirstAidSpray(MainCharacter character, Inventory inventory)
-    {
-        if (inventory.FirstAidSpray > 0)
-        {
-            character.HitPoints = 1000;
-            inventory.FirstAidSpray -= 1;
-        }
-    }
-    static void UseBandages(MainCharacter character, Inventory inventory)
-    {
-        if (inventory.Bandages > 0)
-        {
-            character.HitPoints += 250;
-            if (character.HitPoints >= 1000)
-            {
-                character.HitPoints = 1000;
-            }
-            inventory.Bandages -= 1;
-        }
-    }
-    static void UseHollyWater(Inventory inventory, Enemies enemy)
-    {
-        if (inventory.HollyWaterBottles > 0)
-        {
-            enemy.HitPoints = 0;
-            inventory.HollyWaterBottles -= 1;
-        }
-    }
-    static void RangeWeaponAttack(MainCharacter character, Inventory inventory, Enemies enemy)
-    {
-        if (inventory.Bullets > 0)
-        {
-            inventory.Bullets -= 1;
-        }
-        else
-        {
-            return;
-        }
-
-        if ((character.RollAttackVSArmorClass() + inventory.RangeAttackBonus()) > enemy.ArmorClass)
-        {
-            enemy.HitPoints -= character.AttackDamage() + inventory.RangeDamageBonus();
-        }
-
-        if (enemy.RollAttackVSArmorClass() > character.ArmorClass)
-        {
-            character.HitPoints -= enemy.Damage;
-        }
-    }
-    static void MeleeWeaponAttack(MainCharacter character, Inventory inventory, Enemies enemy)
-    {
-        if ((character.RollAttackVSArmorClass() + inventory.MeleeAttackBonus()) > enemy.ArmorClass)
-        {
-            enemy.HitPoints -= character.AttackDamage() + inventory.MeleeDamageBonus();
-        }
-        if ((enemy.RollAttackVSArmorClass()) > character.ArmorClass)
-        {
-            character.HitPoints -= enemy.Damage;
         }
     }
 
