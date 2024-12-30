@@ -13,19 +13,29 @@ using System.Threading.Tasks;
 
 namespace Main
 {
+    class Armor
+    {
+        string Helmet { get; set; }
+        string ChestArmor { get; set; }
+        string Gloves { get; set; }
+        string Pants { get; set; }
+        string Shoes { get; set; }
+    }
     public class Inventory
     {
         public Inventory()
         {
-            MeleeWeapon = "Knife";
-            RangeWeapon = "Pistol - Desert Eagle";
+            MeleeWeapon = "Kitchen Knife";
+            RangeWeapon = "Pistol - USP-S";
             Bullets = 7;
             //Arrows = 20;
-            HollyWaterBottles = 0;
+            HollyWaterBottles = 1;
             Bandages = 1;
-            FirstAidSpray = 0;
-            ArmorBuffs = 0;
+            FirstAidSpray = 0;            
+            AddArmory();
+
         }
+
 
         public string MeleeWeapon {  get; set; }
         public string RangeWeapon {  get; set; }
@@ -34,7 +44,7 @@ namespace Main
         public int HollyWaterBottles { get; set; }
         public int Bandages { get; set; }
         public int FirstAidSpray { get; set; }
-        public int ArmorBuffs { get; set; } 
+        public Dictionary<string,int> ArmorNameAndBonus { get; set; } 
 
         public int RangeDamageBonus()
         {
@@ -58,7 +68,7 @@ namespace Main
                 case "Shotgun - Nova":
                     damageBonus = 1000;
                     break;
-            }
+            } 
             return damageBonus;
         }
         public int MeleeDamageBonus()
@@ -80,7 +90,7 @@ namespace Main
                 case "Axe":
                     damageBonus = 40;
                     break;
-                case "chainsaw":
+                case "Chainsaw":
                     damageBonus = 100;
                     break;
             }
@@ -138,5 +148,15 @@ namespace Main
             return attackBonus;
         }
 
+        private void AddArmory()
+        {
+            ArmorNameAndBonus = new Dictionary<string, int>();
+
+            ArmorNameAndBonus.Add("No Helmet", 0);
+            ArmorNameAndBonus.Add("No Armor", 0);
+            ArmorNameAndBonus.Add("No Gloves", 0);
+            ArmorNameAndBonus.Add("Normal Pants", 0);
+            ArmorNameAndBonus.Add("Normal Shoes", 0);
+        }
     }
 }
